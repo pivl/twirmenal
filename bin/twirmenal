@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+require "twirmenal/twitter"
+require "twirmenal/version"
+
+module Twirmenal
+  class Application
+
+    def self.welcome_info
+      puts "Welcome to Twirmenal ver.#{Twirmenal::VERSION} , a useless twitter terminal app"
+    end
+
+  end
+end
+
+Twirmenal::Application.welcome_info

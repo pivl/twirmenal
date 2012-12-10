@@ -62,8 +62,12 @@ module Twirmenal
       self.send(command[:name], *command[:args])
     end
 
-    def post(tweet)
-      @twitter.post(tweet)
+    def post(*args)
+      if args.size != 1
+        puts 'type something like post "new tweet"'
+        return nil
+      end
+      @twitter.post(args[0])
     end
 
     def authorize

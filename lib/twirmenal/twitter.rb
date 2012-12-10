@@ -51,8 +51,9 @@ module Twirmenal
 
     def recent(count)
       response = @consumer.request(:get,
-                                   "http://api.twitter.com/1/statuses/home_timeline.json?count=#{count}&exclude_replies=false&include_rts=true", @access_token,
-                        {})
+                                   "http://api.twitter.com/1/statuses/home_timeline.json?count=#{count}&exclude_replies=false&include_rts=true",
+                                   @access_token,
+                                   {})
       hash = JSON.parse(response.body)
       #puts JSON.pretty_generate(hash)
       hash.each do |tweet|
@@ -73,7 +74,12 @@ module Twirmenal
     end
 
     def post(tweet)
-
+      response = @access_token.post('/1.1/statuses/update.json', {"status" => tweet.to_s})
+      if response.code.to_s == "200"
+        puts "New tweet posted"
+      else
+        puts "New tweet failed"
+      end
     end
 
     def store_access_token

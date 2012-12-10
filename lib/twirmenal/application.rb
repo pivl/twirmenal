@@ -33,13 +33,14 @@ module Twirmenal
     def show_available_commands
       puts "Available commands:"
       puts "authorize - authorize Twirmenal as your twitter application"
-      puts "recent [count] - show the most recent tweets in your timeline"
+      puts "recent count - show the most recent tweets in your timeline, for example type \"recent 3\""
       puts 'post  "new tweet" - posts a new tweet'
     end
 
     def input_command
       puts "Enter a command>"
       command_string = gets.chomp
+      return {:name => "empty"} if command_string == ""
       # split the command_string on spaces unless in quotes
       separated = command_string.scan %r{"[^"]*"|\S+}
 
@@ -52,7 +53,7 @@ module Twirmenal
     end
 
     def command_exists? command
-      if COMMAND_LIST.include?(command[:name].to_sym)
+      if  COMMAND_LIST.include?(command[:name].to_sym)
         true
       else
         false

@@ -31,55 +31,71 @@ module Twirmenal
 
     def authorize
       puts "Getting request token..."
-      get_request_token
+      begin
+        get_request_token
 
-      if @request_token.callback_confirmed?
-        puts "Please visit the following URL in your browser"
-        puts "https://api.twitter.com/oauth/authorize?oauth_token=#{@request_token.token.to_s} "
-        puts "and enter the pincode: "
-        pincode = gets.chomp
+        if @request_token.callback_confirmed?
+          puts "Please visit the following URL in your browser"
+          puts "https://api.twitter.com/oauth/authorize?oauth_token=#{@request_token.token.to_s} "
+          puts "and enter the pincode: "
+          pincode = gets.chomp
 
-        puts "Getting access token..."
-        get_access_token(pincode)
-        if (@access_token.token) && (@access_token.secret)
-          store_access_token
-          puts "Twirmenal is successfully authorized"
-        else
-          puts "Twirmenal cannot be authorized"
+          puts "Getting access token..."
+          get_access_token(pincode)
+          if (@access_token.token) && (@access_token.secret)
+            store_access_token
+            puts "Twirmenal is successfully authorized"
+          else
+            puts "Twirmenal cannot be authorized"
+          end
         end
+      rescue SocketError => se
+        puts "SocketError: #{se.message}"
       end
+
     end
 
     def recent(count)
-      response = @consumer.request(:get,
-                                   "http://api.twitter.com/1/statuses/home_timeline.json?count=#{count}&exclude_replies=false&include_rts=true",
-                                   @access_token,
-                                   {})
-      hash = JSON.parse(response.body)
-      #puts JSON.pretty_generate(hash)
-      hash.each do |tweet|
-        puts ""
-        if tweet.include?"retweeted_status"
-          to_show = tweet["retweeted_status"]
-        else
-          to_show = tweet
-        end
-        puts "Name: #{to_show["user"]["name"]}, #{to_show["user"]["screen_name"]}"
-        puts "#{to_show["text"]}"
-        if tweet.include?"retweeted_status"
-          puts "Retweeted by: #{tweet["user"]["name"]}, #{tweet["user"]["screen_name"]}"
-        end
-        puts ""
+      begin
+        response = @consumer.request(:get,
+                                     "http://api.twitter.com/1/statuses/home_timeline.json?count=#{count}&exclude_replies=false&include_rts=true",
+                                     @access_token,
+                                     {})
+        response.value #raise an exception if response not HTTPSuccess
+        hash = JSON.parse(response.body)
+        hash.each do |tweet|
+          puts ""
+          if tweet.include?"retweeted_status"
+            to_show = tweet["retweeted_status"]
+          else
+            to_show = tweet
+          end
+          puts "Name: #{to_show["user"]["name"]}, #{to_show["user"]["screen_name"]}"
+          puts "#{to_show["text"]}"
+          if tweet.include?"retweeted_status"
+            puts "Retweeted by: #{tweet["user"]["name"]}, #{tweet["user"]["screen_name"]}"
+          end
+          puts ""
 
+        end
+      rescue SocketError => se
+        puts "SocketError: #{se.message}"
+      rescue Net::HTTPServerException => server_exception
+        puts "Looks like access token is invalid" if server_exception.response.kind_of?Net::HTTPUnauthorized
       end
     end
 
     def post(tweet)
-      response = @access_token.post('/1.1/statuses/update.json', {"status" => tweet.to_s})
-      if response.code.to_s == "200"
-        puts "New tweet posted"
-      else
-        puts "New tweet failed"
+      begin
+        response = @access_token.post('/1.1/statuses/update.json', {"status" => tweet.to_s})
+        response.value # raise an exception if error
+        if response.kind_of? Net::HTTPSuccess
+          puts "New tweet posted"
+        end
+      rescue SocketError => se
+        puts "SoccetError: #{se.message}"
+      rescue Net::HTTPServerException => exception
+        puts "Looks like access token is invalid" if exception.response.kind_of?Net::HTTPUnauthorized
       end
     end
 
@@ -106,18 +122,22 @@ module Twirmenal
     end
 
     def check_authentication
-      if @access_token.respond_to?(:get)
-        response = @access_token.get("/1.1/account/settings.json")
-        if response.code == "200"
-          values = JSON.parse(response.body)
-          puts "You are authorized as #{values["screen_name"]}"
-          return true
+      begin
+        if @access_token.respond_to?(:get)
+          response = @access_token.get("/1.1/account/settings.json")
+          if response.kind_of? Net::HTTPSuccess
+            values = JSON.parse(response.body)
+            puts "You are authorized as #{values["screen_name"]}"
+            return true
+          else
+            puts "Access token is not valid. Use authorize command"
+            false
+          end
         else
-          puts "Access token is not valid. Use authorize command"
-          false
+          puts "Access token is not present. Use authorize command"
         end
-      else
-        puts "Access token is not present. Use authorize command"
+      rescue SocketError => se
+        puts "Socket Error: #{se.message}"
       end
     end
 

@@ -34,6 +34,7 @@ module Twirmenal
       puts "Available commands:"
       puts "authorize - authorize Twirmenal as your twitter application"
       puts "recent [count] - show the most recent tweets in your timeline"
+      puts 'post  "new tweet" - posts a new tweet'
     end
 
     def input_command

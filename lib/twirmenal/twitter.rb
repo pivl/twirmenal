@@ -18,6 +18,7 @@ module Twirmenal
                                       {:site => "https://api.twitter.com"}
       )
       load_access_token
+      check_authentication
     end
 
     def get_request_token
@@ -101,6 +102,22 @@ module Twirmenal
 
       if hash_with_symbols
         @access_token = OAuth::AccessToken.from_hash(@consumer,hash_with_symbols)
+      end
+    end
+
+    def check_authentication
+      if @access_token.respond_to?(:get)
+        response = @access_token.get("/1.1/account/settings.json")
+        if response.code == "200"
+          values = JSON.parse(response.body)
+          puts "You are authorized as #{values["screen_name"]}"
+          return true
+        else
+          puts "Access token is not valid. Use authorize command"
+          false
+        end
+      else
+        puts "Access token is not present. Use authorize command"
       end
     end
 

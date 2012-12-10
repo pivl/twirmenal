@@ -1,6 +1,9 @@
-
 require "minitest/reporters"
-require "twirmenal/twitter"
+require "minitest/unit"
+
+$LOAD_PATH << File.dirname(__FILE__) + "/../lib/twirmenal" unless $LOAD_PATH.include?(File.dirname(__FILE__) )
+
+require "twitter"
 
 MiniTest::Reporters::use!
 

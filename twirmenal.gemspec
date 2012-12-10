@@ -7,13 +7,14 @@ Gem::Specification.new do |gem|
   gem.name          = "twirmenal"
   gem.version       = Twirmenal::VERSION
   gem.authors       = ["Pavel Stasyuk"]
-  gem.email         = ["pivlyak@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.email         = ['pivlyak@gmail.com']
+  gem.description   = %q{Twirmenal, a twitter terminal}
+  gem.summary       = %q{Twirmenal, a twitter terminal}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  gem.executables   = ["twirmenal"]
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+  gem.add_dependency('oauth', '> 0.4.0')
 end

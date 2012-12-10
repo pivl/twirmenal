@@ -1,6 +1,6 @@
 # Twirmenal
 
-TODO: Write a gem description
+A  simple Twitter Terminal app
 
 ## Installation
 
@@ -18,7 +18,9 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+After installing it you can run it with
+
+    $ twirmenal
 
 ## Contributing
 

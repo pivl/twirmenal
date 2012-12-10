@@ -1,5 +1,6 @@
 require "twirmenal/version"
 
 module Twirmenal
-  # Your code goes here...
+  autoload :Twitter, "twirmenal/twitter"
+
 end

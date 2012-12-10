@@ -22,6 +22,14 @@ After installing it you can run it with
 
     $ twirmenal
 
+Available commands after you run it:
+
+    authorize - authorize Twirmenal as your twitter application
+    recent count - show the most recent tweets in your timeline, for example type "recent 3"
+    post "new tweet" - posts a new tweet
+
+After using authorize command access token information is stored locally in ~/.twirmenal
+
 ## Contributing
 
 1. Fork it
